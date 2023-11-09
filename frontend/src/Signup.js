@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import Validation from "./SignupValidation";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Validation from './SignupValidation';
+import axios from 'axios';
 
 function Signup() {
   const [values, setValues] = useState({
@@ -19,20 +18,13 @@ function Signup() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(values);
     setErrors(Validation(values));
 
-    // Perform error check after setting errors
     axios.post('http://localhost:3307/signup', values)
       .then((res) => {
-        // Check for errors here, and navigate if there are none
         if (res.data === "EmailInUse") {
-
-          // Show an alert for duplicate email
           alert("Sähköpostiosoite on jo käytössä.");
-
         } else if (res.data === "Error") {
-
           alert("Tilin luonti epäonnistui. Tarkista tiedot ja yritä uudelleen.");
         } else {
           navigate('/');
@@ -42,33 +34,59 @@ function Signup() {
   };
 
   return (
-    <div className='d-flex justify-content-center align-items-center bg-primary vh-100'>
-      <div className='bg-white p-3 rounded w-25'>
-        <h2 className='text-center'>Luo tili</h2>
-        <form action="" onSubmit={handleSubmit}>
-          <div className='mb-3'>
-            <label htmlFor="name">Käyttäjänimi</label>
-            <input type="text" placeholder='Syötä käyttäjänimi' name="name" id="name"
-              onChange={handleInput} className='form-control rounded-15' />
-            {errors.name && <span className='text-danger'> {errors.name}</span>}
+    <div className="d-flex justify-content-center align-items-center vh-100 bg-black">
+      <div title='Kotiapp' className='border w-25 rounded d-flex flex-column justify-content-center h-75 bg-white'>
+        <h4 className='text-center '>&nbsp;</h4>
+        <h1 className='text-center'>Kotiapp</h1>
+        <div className='d-flex justify-content-center align-items-center bg-white p-3 m-3'>
+          <div className='bg-white p-3 rounded w-100'>
+            <h4 className='text-left'>Luo tili</h4>
+            <form action="" onSubmit={handleSubmit}>
+              <div className='mb-3'>
+                <label htmlFor="name" className="visually-hidden">Käyttäjänimi</label>
+                <input
+                  type="text"
+                  placeholder='Syötä käyttäjänimi'
+                  name="name"
+                  id="name"
+                  onChange={handleInput}
+                  className='form-control rounded-pill'
+                />
+                {errors.name && <span className='text-danger'> {errors.name}</span>}
+              </div>
+              <div className='mb-3'>
+                <label htmlFor='email' className="visually-hidden">Sähköposti</label>
+                <input
+                  type='email'
+                  placeholder='Syötä sähköposti'
+                  name='email'
+                  id='email'
+                  onChange={handleInput}
+                  className='form-control rounded-pill'
+                />
+                {errors.email && <span className='text-danger'> {errors.email}</span>}
+              </div>
+              <div className='mb-3'>
+                <label htmlFor="password" className="visually-hidden">Salasana</label>
+                <input
+                  type="password"
+                  placeholder='Syötä salasana'
+                  name="password"
+                  id="password"
+                  onChange={handleInput}
+                  className='form-control rounded-pill'
+                />
+                {errors.password && <span className='text-danger'> {errors.password}</span>}
+              </div>
+              <div className='mb-3'>
+                <button type='submit' className='btn btn-dark w-100 rounded-pill'><strong>Luo tili</strong></button>
+              </div>
+              <div className="text-center">
+                <p><Link to="/">Peruuta</Link></p>
+              </div>
+            </form>
           </div>
-          <div className='mb-3'>
-            <label htmlFor='email'>Sähköposti</label>
-            <input type='email' placeholder='Syötä sähköposti' name='email' id='email'
-              onChange={handleInput} className='form-control rounded-15' />
-            {errors.email && <span className='text-danger'> {errors.email}</span>}
-          </div>
-          <div className='mb-3'>
-            <label htmlFor="password">Salasana</label>
-            <input type="password" placeholder='Syötä salasana' name="password" id="password"
-              onChange={handleInput} className='form-control rounded-15' />
-            {errors.password && <span className='text-danger'> {errors.password}</span>}
-          </div>
-          <button type='submit' className='btn btn-primary w-100'><strong>Luo tili</strong></button>
-          <div className="text-center">
-            <p><Link to="/">Peruuta</Link></p>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );
