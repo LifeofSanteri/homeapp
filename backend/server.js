@@ -11,7 +11,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'password',  
+    password: 'password',
     database: 'homeapp'
 });
 
@@ -56,21 +56,20 @@ app.post('/login', (req, res) => {
     const userEmail = email[0];
     const userPassword = password[0];
 
-    const sql = 'SELECT * FROM login WHERE email = ?';
+    const emailSql = 'SELECT * FROM login WHERE email = ?';
 
-    db.query(sql, [userEmail], (err, data) => {
+    db.query(emailSql, [userEmail], (err, emailData) => {
         if (err) {
             console.error('Database query error:', err);
             return res.status(500).json({ error: 'Error' });
         }
 
-        if (data.length === 0) {
+        if (emailData.length === 0) {
             return res.json("NoUser"); // User not found
         }
 
-        const storedPasswordHash = data[0].password; // Assuming the password is stored in the 'password' field
+        const storedPasswordHash = emailData[0].password;
 
-        // Compare the provided password with the stored password hash
         bcrypt.compare(userPassword, storedPasswordHash, (bcryptErr, result) => {
             if (bcryptErr) {
                 console.error('Bcrypt error:', bcryptErr);
@@ -78,13 +77,28 @@ app.post('/login', (req, res) => {
             }
 
             if (result) {
-                return res.json("Success"); // Passwords match, login successful
+                // Passwords match, check if the user has any homes
+                const homeSql = 'SELECT * FROM login WHERE email = ? AND home IS NOT NULL';
+
+                db.query(homeSql, [userEmail], (err, homeData) => {
+                    if (err) {
+                        console.error('Database query error:', err);
+                        return res.status(500).json({ error: 'Error' });
+                    }
+
+                    if (homeData.length > 0) {
+                        return res.json("Success"); // Passwords match, login successful, and user has at least one home
+                    } else {
+                        return res.json("NoHome"); // User doesn't have any homes
+                    }
+                });
             } else {
                 return res.json("Failure"); // Passwords do not match, login failed
             }
         });
     });
 });
+
 
 app.listen(3307, () => {
     console.log('Server is running on port 3307');
