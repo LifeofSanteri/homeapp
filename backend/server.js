@@ -37,7 +37,6 @@ app.post('/signup', (req, res) => {
             if (err) {
                 console.error('Database query error:', err);
                 if (err.code === 'ER_DUP_ENTRY') {
-                    // Return a specific response for duplicate email
                     return res.json("EmailInUse");
                 } else {
                     return res.json("Error");
@@ -52,7 +51,6 @@ app.post('/signup', (req, res) => {
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
 
-    // Extract the email and password strings
     const userEmail = email[0];
     const userPassword = password[0];
 
@@ -68,6 +66,8 @@ app.post('/login', (req, res) => {
             return res.json("NoUser"); // User not found
         }
 
+        const userId = emailData[0].id; // Assuming 'id' is the primary key of the 'login' table
+
         const storedPasswordHash = emailData[0].password;
 
         bcrypt.compare(userPassword, storedPasswordHash, (bcryptErr, result) => {
@@ -77,19 +77,19 @@ app.post('/login', (req, res) => {
             }
 
             if (result) {
-                // Passwords match, check if the user has any homes
-                const homeSql = 'SELECT * FROM login WHERE email = ? AND home IS NOT NULL';
+                // Passwords match, check if the user is associated with any homes
+                const homeSql = 'SELECT * FROM home WHERE user_id = ?';
 
-                db.query(homeSql, [userEmail], (err, homeData) => {
+                db.query(homeSql, [userId], (err, homeData) => {
                     if (err) {
                         console.error('Database query error:', err);
                         return res.status(500).json({ error: 'Error' });
                     }
 
                     if (homeData.length > 0) {
-                        return res.json("Success"); // Passwords match, login successful, and user has at least one home
+                        return res.json("Success"); // Passwords match, login successful, and user is associated with at least one home
                     } else {
-                        return res.json("NoHome"); // User doesn't have any homes
+                        return res.json("NoHome"); // User is not associated with any homes
                     }
                 });
             } else {
@@ -98,7 +98,6 @@ app.post('/login', (req, res) => {
         });
     });
 });
-
 
 app.listen(3307, () => {
     console.log('Server is running on port 3307');
