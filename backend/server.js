@@ -36,12 +36,18 @@ app.post('/signup', (req, res) => {
         db.query(sql, values, (err, data) => {
             if (err) {
                 console.error('Database query error:', err);
-                return res.status(500).json("Error");
+                if (err.code === 'ER_DUP_ENTRY') {
+                    // Return a specific response for duplicate email
+                    return res.json("EmailInUse");
+                } else {
+                    return res.json("Error");
+                }
             }
             return res.json(data);
         });
     });
 });
+
 
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
@@ -59,7 +65,7 @@ app.post('/login', (req, res) => {
         }
 
         if (data.length === 0) {
-            return res.json("Failure"); // User not found
+            return res.json("NoUser"); // User not found
         }
 
         const storedPasswordHash = data[0].password; // Assuming the password is stored in the 'password' field

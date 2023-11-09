@@ -24,8 +24,10 @@ function Login() {
                 // Check for errors here, and navigate if there are no errors
                 if (res.data === "Success") {
                   navigate('/home');
+                } else if (res.data === "NoUser") {
+                    alert('Sinulla ei ole käyttäjää. Luo tili');
                 } else {
-                  alert("Kirjautuminen epäonnistui");
+                  alert("Kirjautuminen epäonnistui. Tarkista tiedot ja yritä uudelleen.");
                 }
               })
               .catch((err) => console.log(err));
