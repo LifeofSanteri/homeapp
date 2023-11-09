@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function NewHome() {
+function JoinOrCreate() {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 bg-black">
       <div
@@ -13,14 +13,14 @@ function NewHome() {
         <div className="d-flex justify-content-center align-items-center bg-white p-3 m-3">
           <div className="bg-white p-3 rounded w-100">
             <div className="mb-5">
-              <Link to="/join"> {/* Use Link for "Join Home" */}
+              <Link to="/join"> 
                 <button type="submit" className="btn btn-dark w-100 rounded-pill">
                   <strong>Liity kotiin</strong>
                 </button>
               </Link>
             </div>
             <div className="mb-3">
-              <Link to="/create"> {/* Use Link for "Create Home" */}
+              <Link to="/create">
                 <button type="submit" className="btn btn-dark w-100 rounded-pill">
                   <strong>Luo koti</strong>
                 </button>
@@ -33,4 +33,4 @@ function NewHome() {
   );
 }
 
-export default NewHome;
+export default JoinOrCreate;
