@@ -27,7 +27,7 @@ function Login() {
         } else if (res.data === "NoUser") {
           alert('Sinulla ei ole käyttäjää. Luo tili');
         } else if (res.data === "NoHome") {
-          navigate('/newhome');
+          navigate('/joc');
         } else {
           alert("Kirjautuminen epäonnistui. Tarkista tiedot ja yritä uudelleen.");
         }
