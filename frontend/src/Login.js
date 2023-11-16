@@ -16,23 +16,34 @@ function Login() {
     setValues((prev) => ({ ...prev, [event.target.name]: [event.target.value] }));
   };
 
-  const handleSumbit = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     setErrors(Validation(values));
 
-    axios.post('http://localhost:3307/login', values)
-      .then((res) => {
-        if (res.data === "Success") {
-          navigate('/home');
-        } else if (res.data === "NoUser") {
-          alert('Sinulla ei ole käyttäjää. Luo tili');
-        } else if (res.data === "NoHome") {
-          navigate('/joc');
-        } else {
-          alert("Kirjautuminen epäonnistui. Tarkista tiedot ja yritä uudelleen.");
-        }
-      })
-      .catch((err) => console.log(err));
+axios.post('http://localhost:3307/login', values)
+  .then((res) => {
+    const status = res.data.status;
+    const userId = res.data.userId;
+
+    if (status === "Success") {
+      // Save the user ID in localStorage
+      localStorage.setItem('userId', userId);
+
+      navigate('/home');
+      console.log('ID:', userId);
+    } else if (status === "NoUser") {
+      alert('Sinulla ei ole käyttäjää. Luo tili');
+    } else if (status === "NoHome") {
+      // Save the user ID in localStorage
+      localStorage.setItem('userId', userId);
+
+      console.log('ID:', userId);
+      navigate('/joc');
+    } else {
+      alert("Kirjautuminen epäonnistui. Tarkista tiedot ja yritä uudelleen.");
+    }
+  })
+  .catch((err) => console.log(err));
   };
 
   return (
@@ -43,7 +54,7 @@ function Login() {
         <div className="d-flex justify-content-center align-items-center bg-white p-3 m-3">
           <div className="bg-white p-3 rounded w-100">
             <h4 className="text-left">Kirjaudu</h4>
-            <form action="" onSubmit={handleSumbit}>
+            <form action="" onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label htmlFor="email" className="visually-hidden">Sähköposti</label>
                 <input

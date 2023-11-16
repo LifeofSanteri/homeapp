@@ -63,7 +63,7 @@ app.post('/login', (req, res) => {
         }
 
         if (emailData.length === 0) {
-            return res.json("NoUser"); // User not found
+            return res.json({ status: "NoUser" }); // User not found
         }
 
         const userId = emailData[0].id; // Assuming 'id' is the primary key of the 'login' table
@@ -87,16 +87,52 @@ app.post('/login', (req, res) => {
                     }
 
                     if (homeData.length > 0) {
-                        return res.json("Success"); // Passwords match, login successful, and user is associated with at least one home
+                        return res.json({ status: "Success", userId: userId }); // Passwords match, login successful, and user is associated with at least one home
                     } else {
-                        return res.json("NoHome"); // User is not associated with any homes
+                        return res.json({ status: "NoHome", userId: userId }); // User is not associated with any homes
                     }
                 });
             } else {
-                return res.json("Failure"); // Passwords do not match, login failed
+                return res.json({ status: "Failure" }); // Passwords do not match, login failed
             }
         });
     });
+});
+
+
+app.post('/create-home', (req, res) => {
+    const userId = req.body.userId;
+    const homeName = req.body.name;
+
+    // Function to generate a random 4-digit number
+    const generateRandomTag = () => Math.floor(1000 + Math.random() * 9000);
+
+    // Initial attempt to generate a unique home tag
+    let homeTag = generateRandomTag();
+
+    // Function to recursively check and generate a unique home tag
+    const insertHomeWithUniqueTag = () => {
+        const createHomeSql = 'INSERT INTO home (user_id, name, tag) VALUES (?, ?, ?)';
+        const values = [userId, homeName, homeTag];
+
+        db.query(createHomeSql, values, (err, data) => {
+            if (err) {
+                // If the error is due to a non-unique tag, generate a new one and try again
+                if (err.code === 'ER_DUP_ENTRY' && err.errno === 1062) {
+                    homeTag = generateRandomTag();
+                    insertHomeWithUniqueTag(); // Retry with the new tag
+                } else {
+                    console.error('Create home query error:', err);
+                    return res.status(500).json({ error: 'Error' });
+                }
+            } else {
+                return res.json({ status: 'HomeCreated', homeId: data.insertId, homeTag });
+            }
+        });
+    };
+
+    // Initial attempt to insert with a unique tag
+    insertHomeWithUniqueTag();
 });
 
 app.listen(3307, () => {
