@@ -6,7 +6,7 @@ const saltRounds = 10;
 
 const app = express();
 app.use(cors());
-app.use(express.json()); 
+app.use(express.json());
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -32,7 +32,7 @@ app.post('/signup', (req, res) => {
 
         const sql = 'INSERT INTO login (name, email, password) VALUES (?, ?, ?)';
         const values = [req.body.name, req.body.email, hash];
-        
+
         db.query(sql, values, (err, data) => {
             if (err) {
                 console.error('Database query error:', err);
@@ -46,7 +46,6 @@ app.post('/signup', (req, res) => {
         });
     });
 });
-
 
 app.post('/login', (req, res) => {
     const { email, password } = req.body;
@@ -63,10 +62,10 @@ app.post('/login', (req, res) => {
         }
 
         if (emailData.length === 0) {
-            return res.json({ status: "NoUser" }); // User not found
+            return res.json({ status: "NoUser" });
         }
 
-        const userId = emailData[0].id; // Assuming 'id' is the primary key of the 'login' table
+        const userId = emailData[0].id;
 
         const storedPasswordHash = emailData[0].password;
 
@@ -77,7 +76,6 @@ app.post('/login', (req, res) => {
             }
 
             if (result) {
-                // Passwords match, check if the user is associated with any homes
                 const homeSql = 'SELECT * FROM home WHERE user_id = ?';
 
                 db.query(homeSql, [userId], (err, homeData) => {
@@ -87,18 +85,17 @@ app.post('/login', (req, res) => {
                     }
 
                     if (homeData.length > 0) {
-                        return res.json({ status: "Success", userId: userId }); // Passwords match, login successful, and user is associated with at least one home
+                        return res.json({ status: "Success", userId: userId });
                     } else {
-                        return res.json({ status: "NoHome", userId: userId }); // User is not associated with any homes
+                        return res.json({ status: "NoHome", userId: userId });
                     }
                 });
             } else {
-                return res.json({ status: "Failure" }); // Passwords do not match, login failed
+                return res.json({ status: "Failure" });
             }
         });
     });
 });
-
 
 app.post('/create-home', (req, res) => {
     const userId = req.body.userId;
@@ -133,6 +130,136 @@ app.post('/create-home', (req, res) => {
 
     // Initial attempt to insert with a unique tag
     insertHomeWithUniqueTag();
+});
+
+app.post('/fetch-home', (req, res) => {
+    const userId = req.body.userId;
+
+    const homeSql = 'SELECT * FROM home WHERE user_id = ?';
+
+    db.query(homeSql, [userId], (err, homeData) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).json({ status: 'Error' });
+        }
+
+        if (homeData.length > 0) {
+            const { id: homeId, name: homeName } = homeData[0];
+            return res.json({ status: 'Success', homeId, homeName });
+        } else {
+            return res.json({ status: 'NoHome' });
+        }
+    });
+});
+
+app.post('/add-todo', (req, res) => {
+    const userId = req.body.userId;
+    const homeId = req.body.homeId;
+    const task = req.body.task;
+
+    const addTodoSql = 'INSERT INTO todos (home_id, task) VALUES (?, ?)';
+    db.query(addTodoSql, [homeId, task], (err, result) => {
+        if (err) {
+            console.error('Error adding todo:', err);
+            return res.status(500).json({ status: 'Error' });
+        }
+
+        const insertedTodoId = result.insertId;
+        return res.json({ status: 'TodoAdded', todoId: insertedTodoId, homeId });
+    });
+});
+
+
+app.post('/fetch-todos', (req, res) => {
+    const homeId = req.body.homeId;
+
+    const fetchTodosSql = 'SELECT * FROM todos WHERE home_id = ?';
+    db.query(fetchTodosSql, [homeId], (err, todos) => {
+        if (err) {
+            console.error('Error fetching todos:', err);
+            return res.status(500).json({ status: 'Error' });
+        }
+
+        return res.json({ status: 'Success', todos });
+    });
+});
+
+// Add this route to handle todo deletion
+app.post('/delete-todo', (req, res) => {
+    const todoId = req.body.todoId;
+
+    const deleteTodoSql = 'DELETE FROM todos WHERE id = ?';
+    db.query(deleteTodoSql, [todoId], (err, result) => {
+        if (err) {
+            console.error('Error deleting todo:', err);
+            return res.status(500).json({ status: 'Error' });
+        }
+
+        return res.json({ status: 'TodoDeleted' });
+    });
+});
+
+app.post('/add-note', (req, res) => {
+    const { homeId, note } = req.body;
+  
+    // Insert the note into the database
+    const sql = 'INSERT INTO notes (home_id, note_text) VALUES (?, ?)';
+    db.query(sql, [homeId, note], (err, result) => {
+      if (err) {
+        console.error('Error inserting note:', err);
+        res.status(500).json({ status: 'ErrorAddingNote' });
+      } else {
+        const noteId = result.insertId;
+        console.log('Note added successfully with ID:', noteId);
+        res.json({ status: 'NoteAdded', noteId });
+      }
+    });
+  });
+
+  app.post('/fetch-notes', (req, res) => {
+    const { homeId } = req.body;
+  
+    // Fetch notes from the database based on homeId
+    const sql = 'SELECT id, note_text, checked FROM notes WHERE home_id = ?';
+    db.query(sql, [homeId], (err, results) => {
+        if (err) {
+            console.error('Error fetching notes:', err);
+            return res.status(500).json({ status: 'ErrorFetchingNotes' });
+        } else {
+            // Convert the checked property to a boolean
+            const notes = results.map((row) => ({ id: row.id, text: row.note_text, checked: row.checked === 1 }));
+            res.json({ status: 'NotesFetched', notes });
+        }
+    });
+});
+
+  app.post('/update-note-checked-state', (req, res) => {
+    const { noteId, checked } = req.body;
+
+    // Update the checked state in the database
+    const updateNoteSql = 'UPDATE notes SET checked = ? WHERE id = ?';
+    db.query(updateNoteSql, [checked, noteId], (err, result) => {
+        if (err) {
+            console.error('Error updating note checked state:', err);
+            res.status(500).json({ status: 'ErrorUpdatingNoteCheckedState' });
+        } else {
+            res.json({ status: 'NoteCheckedStateUpdated' });
+        }
+    });
+});
+
+app.post('/clear-notes', (req, res) => {
+    const homeId = req.body.homeId;
+
+    const clearNotesSql = 'DELETE FROM notes WHERE home_id = ?';
+    db.query(clearNotesSql, [homeId], (err, result) => {
+        if (err) {
+            console.error('Error clearing notes:', err);
+            return res.status(500).json({ status: 'ErrorClearingNotes' });
+        }
+
+        return res.json({ status: 'NotesCleared' });
+    });
 });
 
 app.listen(3307, () => {

@@ -26,7 +26,6 @@ axios.post('http://localhost:3307/login', values)
     const userId = res.data.userId;
 
     if (status === "Success") {
-      // Save the user ID in localStorage
       localStorage.setItem('userId', userId);
 
       navigate('/home');
@@ -34,7 +33,6 @@ axios.post('http://localhost:3307/login', values)
     } else if (status === "NoUser") {
       alert('Sinulla ei ole käyttäjää. Luo tili');
     } else if (status === "NoHome") {
-      // Save the user ID in localStorage
       localStorage.setItem('userId', userId);
 
       console.log('ID:', userId);
@@ -63,6 +61,7 @@ axios.post('http://localhost:3307/login', values)
                   name="email"
                   id="email"
                   onChange={handleInput}
+                  autoComplete='on'
                   className="form-control rounded-pill"
                 />
                 {errors.email && <span className="text-danger"> {errors.email}</span>}

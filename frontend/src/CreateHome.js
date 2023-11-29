@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function CreateHome() {
+  const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const [error, setError] = useState(null);
 
@@ -19,6 +21,9 @@ function CreateHome() {
         // handle success
         console.log('Create Home Response:', response.data);
         setError(null); // Clear any previous errors
+
+        // Navigate to '/home' after successful home creation
+        navigate('/home');
       })
       .catch(error => {
         // handle error
