@@ -3,16 +3,18 @@ const cors = require('cors');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'password',
-    database: 'homeapp'
+    host: '3.75.158.163', // Choose the appropriate Render IP address
+    user: 'root', // Replace with your actual database username
+    password: 'password', // Replace with your actual database password
+    database: 'homeapp', // Replace with your actual database name
+    port: 3306 // Assuming your MySQL database is running on the default MySQL port
 });
 
 db.connect((err) => {
@@ -262,6 +264,8 @@ app.post('/clear-notes', (req, res) => {
     });
 });
 
-app.listen(3307, () => {
-    console.log('Server is running on port 3307');
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
+
+
