@@ -10,11 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'password',
-    database: process.env.DB_NAME || 'homeapp',
-    port: process.env.DB_PORT || 3306
+    host: '3.75.158.163', // Choose the appropriate Render IP address
+    user: 'root', // Replace with your actual database username
+    password: 'password', // Replace with your actual database password
+    database: 'homeapp', // Replace with your actual database name
+    port: 3306 // Assuming your MySQL database is running on the default MySQL port
 });
 
 db.connect((err) => {
