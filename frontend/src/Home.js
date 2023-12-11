@@ -19,7 +19,7 @@ function Home() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.post('http://localhost:3307/fetch-home', { userId });
+        const response = await axios.post('https://backend-7hf8.onrender.com/fetch-home', { userId });
         const { status, homeName, homeId } = response.data;
 
         if (status === 'Success') {
