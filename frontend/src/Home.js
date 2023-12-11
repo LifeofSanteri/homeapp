@@ -72,14 +72,14 @@ function Home() {
 
   const handleCheckboxChange = async (todoId) => {
     try {
-      const response = await axios.post('http://localhost:3307/delete-todo', {
+      const response = await axios.post('https://backend-7hf8.onrender.com/delete-todo', {
         todoId,
       });
 
       const { status } = response.data;
 
       if (status === 'TodoDeleted') {
-        const todosResponse = await axios.post('http://localhost:3307/fetch-todos', { homeId });
+        const todosResponse = await axios.post('https://backend-7hf8.onrender.com/fetch-todos', { homeId });
         const todos = todosResponse.data.todos;
 
         const todoDivs = todos.map((todo) => createInnerDiv(todo.id, todo.task));
@@ -114,7 +114,7 @@ function Home() {
 
       const userId = localStorage.getItem('userId');
 
-      const response = await axios.post('http://localhost:3307/add-todo', {
+      const response = await axios.post('https://backend-7hf8.onrender.com/add-todo', {
         userId,
         homeId,
         task: modalInput,
@@ -149,7 +149,7 @@ function Home() {
       try {
         const newNote = { text: muistiinpanotInput, checked: false };
 
-        const response = await axios.post('http://localhost:3307/add-note', {
+        const response = await axios.post('https://backend-7hf8.onrender.com/add-note', {
           homeId,
           note: newNote.text,
         });
@@ -170,7 +170,7 @@ function Home() {
   const handleClearMuistilista = async () => {
     try {
       // Make a request to clear all notes for the current home_id
-      const response = await axios.post('http://localhost:3307/clear-notes', { homeId });
+      const response = await axios.post('https://backend-7hf8.onrender.com/clear-notes', { homeId });
   
       const { status } = response.data;
   
@@ -200,7 +200,7 @@ function Home() {
 
   const updateNoteCheckedState = async (noteId, checked) => {
     try {
-      await axios.post('http://localhost:3307/update-note-checked-state', {
+      await axios.post('https://backend-7hf8.onrender.com/update-note-checked-state', {
         noteId,
         checked,
       });
