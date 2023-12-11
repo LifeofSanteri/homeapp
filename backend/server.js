@@ -3,18 +3,18 @@ const cors = require('cors');
 const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3307;
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT || 3306
+    host: 'localhost',
+    password: 'password',
+    user: 'root',
+    database: 'homeapp',
+
 });
 
 db.connect((err) => {

@@ -20,7 +20,7 @@ function Login() {
     event.preventDefault();
     setErrors(Validation(values));
 
-    axios.post('https://psqserver.onrender.com/login', values)
+    axios.post('http://localhost:3307/login', values)
   .then((res) => {
     const status = res.data.status;
     const userId = res.data.userId;
