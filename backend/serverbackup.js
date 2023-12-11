@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { Client } = require('pg');
+const mysql = require('mysql');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const PORT = process.env.PORT || 3000;
@@ -9,12 +9,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const db = new Client({
-    user: 'homeapp_yspx_user',
-    host: 'dpg-clrfnijh3k0c73aiidmg-a.frankfurt-postgres.render.com',
-    database: 'homeapp_yspx',
-    password: 'u8WTrTTl13c1qowvav7fk5bdMI8UGxSp',
-    port: 5432,
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT || 3306
 });
 
 db.connect((err) => {
