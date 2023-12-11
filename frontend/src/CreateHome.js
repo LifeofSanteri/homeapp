@@ -16,7 +16,7 @@ function CreateHome() {
       return;
     }
 
-    axios.post('http://localhost:3307/create-home', { userId, name: homeName })
+    axios.post('https://backend-7hf8.onrender.com/create-home', { userId, name: homeName })
       .then(response => {
         // handle success
         console.log('Create Home Response:', response.data);
