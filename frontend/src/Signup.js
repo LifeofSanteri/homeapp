@@ -20,7 +20,7 @@ function Signup() {
     event.preventDefault();
     setErrors(Validation(values));
 
-    axios.post('http://localhost:3307/signup', values)
+    axios.post('https://home-app-front.onrender.com/signup', values)
       .then((res) => {
         if (res.data === "EmailInUse") {
           alert("Sähköpostiosoite on jo käytössä.");
