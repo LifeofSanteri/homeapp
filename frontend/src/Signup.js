@@ -20,7 +20,7 @@ function Signup() {
     event.preventDefault();
     setErrors(Validation(values));
 
-    axios.post('https://psqserver.onrender.com/login', values)
+    axios.post('http://localhost:3307/signup', values)
       .then((res) => {
         if (res.data === "EmailInUse") {
           alert("Sähköpostiosoite on jo käytössä.");
