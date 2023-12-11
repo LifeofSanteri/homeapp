@@ -20,7 +20,7 @@ function Login() {
     event.preventDefault();
     setErrors(Validation(values));
 
-    axios.post('https://sql11.freesqldatabase.com/login', values)
+    axios.post('https://backend-7hf8.onrender.com/login', values)
   .then((res) => {
     const status = res.data.status;
     const userId = res.data.userId;
