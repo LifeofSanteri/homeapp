@@ -26,14 +26,14 @@ function Home() {
           setHomeName(homeName);
           setHomeId(homeId);
 
-          const todosResponse = await axios.post('http://localhost:3307/fetch-todos', { homeId });
+          const todosResponse = await axios.post('https://backend-7hf8.onrender.com/fetch-todos', { homeId });
           const todos = todosResponse.data.todos;
 
           const todoDivs = todos.map((todo) => createInnerDiv(todo.id, todo.task));
 
           setInnerDivs(todoDivs);
 
-          const notesResponse = await axios.post('http://localhost:3307/fetch-notes', { homeId });
+          const notesResponse = await axios.post('https://backend-7hf8.onrender.com/fetch-notes', { homeId });
           const notes = notesResponse.data.notes;
 
           setMuistiinpanot(notes);
